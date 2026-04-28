@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 苹果风格基础样式 */
+@layer base {
+  html {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  /* 浅色模式 */
+  html {
+    @apply bg-apple-gray-50 text-apple-gray-500;
+  }
+  
+  /* 深色模式 */
+  html.dark {
+    @apply bg-apple-gray-500 text-apple-gray-50;
+  }
+}
+
+/* 组件样式 */
+@layer components {
+  /* 毛玻璃效果 */
+  .glass {
+    @apply backdrop-blur-xl bg-white/70;
+  }
+  
+  .dark .glass {
+    @apply bg-black/50;
+  }
+  
+  /* 卡片样式 */
+  .card {
+    @apply rounded-2xl p-5 transition-all duration-300;
+    @apply bg-white shadow-apple;
+    @apply hover:shadow-apple-lg hover:scale-[1.02];
+  }
+  
+  .dark .card {
+    @apply bg-apple-gray-500/90 shadow-apple-dark;
+    @apply border border-white/10;
+  }
+  
+  /* 状态卡片 */
+  .stat-card {
+    @apply card flex flex-col gap-3;
+  }
+  
+  .stat-card.running {
+    @apply border-l-4 border-l-apple-green;
+  }
+  
+  .stat-card.stopped {
+    @apply border-l-4 border-l-apple-red;
+  }
+  
+  /* 按钮样式 */
+  .btn {
+    @apply px-4 py-2 rounded-xl font-medium transition-all duration-200;
+    @apply hover:scale-105 active:scale-95;
+  }
+  
+  .btn-primary {
+    @apply btn bg-apple-blue text-white;
+    @apply hover:bg-apple-blue/90;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-apple-gray-200 text-apple-gray-500;
+    @apply hover:bg-apple-gray-300;
+  }
+  
+  .dark .btn-secondary {
+    @apply bg-white/10 text-apple-gray-100;
+    @apply hover:bg-white/20;
+  }
+  
+  .btn-danger {
+    @apply btn bg-apple-red text-white;
+    @apply hover:bg-apple-red/90;
+  }
+  
+  .btn-success {
+    @apply btn bg-apple-green text-white;
+    @apply hover:bg-apple-green/90;
+  }
+  
+  /* 导航项 */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl;
+    @apply text-apple-gray-400 transition-all duration-200;
+    @apply hover:bg-apple-gray-200/50;
+  }
+  
+  .dark .nav-item {
+    @apply text-apple-gray-200 hover:bg-white/5;
+  }
+  
+  .nav-item.active {
+    @apply bg-apple-blue/10 text-apple-blue font-medium;
+  }
+  
+  .dark .nav-item.active {
+    @apply bg-apple-blue/20;
+  }
+  
+  /* 进度条 */
+  .progress-bar {
+    @apply h-2 rounded-full bg-apple-gray-200 overflow-hidden;
+  }
+  
+  .dark .progress-bar {
+    @apply bg-white/10;
+  }
+  
+  .progress {
+    @apply h-full rounded-full transition-all duration-500;
+  }
+  
+  /* 输入框 */
+  .input {
+    @apply w-full px-4 py-2 rounded-xl border border-apple-gray-200;
+    @apply bg-white text-apple-gray-500;
+    @apply focus:outline-none focus:ring-2 focus:ring-apple-blue/50;
+    @apply transition-all duration-200;
+  }
+  
+  .dark .input {
+    @apply bg-white/5 border-white/10 text-apple-gray-100;
+  }
+}
+
+/* 动画 */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 3s ease-in-out infinite;
+  }
+}
+
+/* 消息操作按钮 */
+.message-actions {
+  display: flex;
+  gap: 4px;
+  z-index: 10;
+}
+
+.message {
+  padding-bottom: 28px;
+}

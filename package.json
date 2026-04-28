@@ -1,0 +1,24 @@
+{
+  "name": "chenyi-panel",
+  "version": "1.0.0",
+  "description": "晨翼Agent控制面板 - Electron桌面应用",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --no-sandbox",
+    "dev": "electron . --no-sandbox"
+  },
+  "keywords": [
+    "chenyi",
+    "agent",
+    "panel"
+  ],
+  "author": "Fangpeng",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "tailwindcss": "^3.4.0"
+  },
+  "dependencies": {
+    "ws": "^8.20.0"
+  }
+}
