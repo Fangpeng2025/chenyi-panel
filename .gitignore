@@ -3,3 +3,16 @@ node_modules/
 *.backup
 *.log
 .DS_Store
+
+# Electron Builder 输出
+dist/
+release/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
