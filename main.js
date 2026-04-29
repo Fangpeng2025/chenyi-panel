@@ -1064,7 +1064,7 @@ ipcMain.handle('get-phone-config', async () => {
 });
 
 // 手机操作（截图、按键等）- 通过 WebSocket 发送命令
-ipcMain.handle('phone-action', async (event, action) => {
+ipcMain.handle('phone-action', async (event, action, params = {}) => {
   try {
     // 检查 WebSocket 连接
     if (!pcwlConnected || !pcwlWs) {
@@ -1072,7 +1072,7 @@ ipcMain.handle('phone-action', async (event, action) => {
     }
     
     let command = '';
-    let params = {};
+    let commandParams = {};
     let message = '';
     
     switch (action) {
@@ -1080,52 +1080,95 @@ ipcMain.handle('phone-action', async (event, action) => {
         command = 'screenshot';
         message = '截图完成';
         break;
+        
+      case 'tap':
+        // 点击操作
+        command = 'tap';
+        commandParams = { x: params.x, y: params.y };
+        message = `点击 (${params.x}, ${params.y})`;
+        break;
+        
+      case 'swipe':
+        // 滑动操作
+        command = 'swipe';
+        commandParams = {
+          startX: params.startX,
+          startY: params.startY,
+          endX: params.endX,
+          endY: params.endY,
+          duration: params.duration || 300
+        };
+        message = `滑动 (${params.startX},${params.startY}) -> (${params.endX},${params.endY})`;
+        break;
+        
+      case 'input_text':
+        // 输入文字
+        command = 'input_text';
+        commandParams = { text: params.text };
+        message = `输入: ${params.text.substring(0, 20)}${params.text.length > 20 ? '...' : ''}`;
+        break;
+        
       case 'home':
         command = 'press_key';
-        params = { key: 'home' };
+        commandParams = { key: 'home' };
         message = '已返回主页';
         break;
+        
       case 'back':
         command = 'press_key';
-        params = { key: 'back' };
+        commandParams = { key: 'back' };
         message = '已返回';
         break;
+        
       case 'power':
         command = 'press_key';
-        params = { key: 'power_dialog' };
+        commandParams = { key: 'power_dialog' };
         message = '电源菜单';
         break;
+        
       case 'volume_up':
         command = 'press_key';
-        params = { key: 'volume_up' };
+        commandParams = { key: 'volume_up' };
         message = '音量+';
         break;
+        
       case 'volume_down':
         command = 'press_key';
-        params = { key: 'volume_down' };
+        commandParams = { key: 'volume_down' };
         message = '音量-';
         break;
+        
       case 'apps':
         command = 'press_key';
-        params = { key: 'recents' };
+        commandParams = { key: 'recents' };
         message = '应用列表';
         break;
+        
       case 'notifications':
         command = 'press_key';
-        params = { key: 'notifications' };
+        commandParams = { key: 'notifications' };
         message = '通知面板';
         break;
+        
       case 'quick_settings':
         command = 'press_key';
-        params = { key: 'quick_settings' };
+        commandParams = { key: 'quick_settings' };
         message = '快速设置';
         break;
+        
+      case 'start_app':
+        // 启动应用
+        command = 'start_app';
+        commandParams = { package: params.package };
+        message = `启动应用: ${params.package}`;
+        break;
+        
       default:
-        return { success: false, error: '未知操作' };
+        return { success: false, error: `未知操作: ${action}` };
     }
     
     // 发送命令到手机
-    const result = await sendPhoneCommand(command, params);
+    const result = await sendPhoneCommand(command, commandParams);
     
     if (result.success) {
       // 如果是截图，返回图片数据
@@ -1136,7 +1179,7 @@ ipcMain.handle('phone-action', async (event, action) => {
           screenshot: result.data  // base64 图片数据
         };
       }
-      return { success: true, message };
+      return { success: true, message, data: result.data };
     } else {
       return { success: false, error: result.error || '命令执行失败' };
     }
