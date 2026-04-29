@@ -224,6 +224,67 @@ function sendQuickMessage(text) {
 
 window.sendQuickMessage = sendQuickMessage;
 
+// 快捷指令（直接执行手机操作）
+async function sendQuickCommand(cmd) {
+  // 显示加载提示
+  const input = document.getElementById('message-input');
+  const originalPlaceholder = input.placeholder;
+  input.placeholder = `正在执行: ${cmd}...`;
+  input.disabled = true;
+  
+  try {
+    switch (cmd) {
+      case '截图':
+        if (!pcwlConnected) {
+          showToast('请先连接手机', 'warning');
+          return;
+        }
+        const screenshotResult = await ipcRenderer.invoke('phone-action', 'screenshot');
+        if (screenshotResult.success) {
+          showToast('截图成功', 'success');
+          // 显示截图
+          addMessage('assistant', `📸 截图成功\n\n![截图](data:image/jpeg;base64,${screenshotResult.screenshot})`);
+        } else {
+          showToast(`截图失败: ${screenshotResult.error}`, 'error');
+        }
+        break;
+        
+      case '手机状态':
+        if (!pcwlConnected) {
+          showToast('请先连接手机', 'warning');
+          return;
+        }
+        addMessage('assistant', `📊 手机状态\n\n- **设备**: ${pcwlDeviceInfo?.model || '未知'}\n- **系统**: Android ${pcwlDeviceInfo?.android_version || '未知'}\n- **连接**: 在线`);
+        break;
+        
+      case '电池电量':
+        if (!pcwlConnected) {
+          showToast('请先连接手机', 'warning');
+          return;
+        }
+        const batteryResult = await ipcRenderer.invoke('phone-action', 'screenshot');
+        addMessage('assistant', `🔋 电池状态\n\n请查看手机状态栏`);
+        break;
+        
+      case '投屏':
+        showPanel('phone');
+        break;
+        
+      default:
+        // 其他指令发送到AI
+        input.value = cmd;
+        sendMessage();
+    }
+  } catch (error) {
+    showToast(`执行失败: ${error.message}`, 'error');
+  } finally {
+    input.placeholder = originalPlaceholder;
+    input.disabled = false;
+  }
+}
+
+window.sendQuickCommand = sendQuickCommand;
+
 // ==================== 发送消息 ====================
 async function sendMessage() {
   const input = document.getElementById('message-input');

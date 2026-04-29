@@ -484,6 +484,21 @@
           </div>
           
           <div class="relative bg-gray-100 dark:bg-gray-800 rounded-2xl">
+            <!-- 快捷指令按钮 -->
+            <div class="flex gap-2 px-3 pt-2 pb-1">
+              <button onclick="sendQuickCommand('截图')" class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-600 dark:text-blue-300 rounded-full text-xs font-medium transition-colors flex items-center gap-1">
+                📸 截图
+              </button>
+              <button onclick="sendQuickCommand('手机状态')" class="px-3 py-1 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-600 dark:text-green-300 rounded-full text-xs font-medium transition-colors flex items-center gap-1">
+                📊 状态
+              </button>
+              <button onclick="sendQuickCommand('电池电量')" class="px-3 py-1 bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-800/50 text-amber-600 dark:text-amber-300 rounded-full text-xs font-medium transition-colors flex items-center gap-1">
+                🔋 电量
+              </button>
+              <button onclick="sendQuickCommand('投屏')" class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-800/50 text-purple-600 dark:text-purple-300 rounded-full text-xs font-medium transition-colors flex items-center gap-1">
+                📱 投屏
+              </button>
+            </div>
             <textarea 
               id="message-input" 
               class="w-full px-4 py-3 bg-transparent text-gray-800 dark:text-gray-200 rounded-2xl resize-none focus:outline-none placeholder-gray-400 dark:placeholder-gray-600 min-h-[3.5rem]"
