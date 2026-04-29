@@ -3207,8 +3207,19 @@ async function startScreenStream(ip, port, options = {}) {
         // 错误响应
         if (data.success === false && data.error) {
           console.error('[ScreenStream] 服务器错误:', data.error);
-          showPhoneNotification(`屏幕流错误: ${data.error}`, 'error');
-          if (onError) onError(new Error(data.error));
+          
+          // 检测MediaProjection授权错误
+          const errorMsg = data.error.toLowerCase();
+          if (errorMsg.includes('mediaprojection') || errorMsg.includes('permission') || errorMsg.includes('授权')) {
+            showPhoneNotification('需要屏幕录制权限，请在手机上授权后重试', 'warning');
+            // 自动降级到JPEG截图模式
+            console.log('[ScreenStream] 降级到JPEG截图模式');
+            stopScreenStream();
+            setTimeout(() => startJpegStream(ip, port, options), 1000);
+          } else {
+            showPhoneNotification(`屏幕流错误: ${data.error}`, 'error');
+            if (onError) onError(new Error(data.error));
+          }
           return;
         }
         
@@ -3297,8 +3308,68 @@ async function startScreenStream(ip, port, options = {}) {
   }
 }
 
+// JPEG截图流（H.264降级方案）
+let jpegStreamInterval = null;
+
+async function startJpegStream(ip, port, options = {}) {
+  const {
+    canvasId = 'screen-canvas',
+    fps = 15,
+    onFrame = null,
+    onError = null
+  } = options;
+  
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) {
+    console.error(`Canvas元素 #${canvasId} 未找到`);
+    return false;
+  }
+  
+  screenStreamState.canvas = canvas;
+  screenStreamState.ctx = canvas.getContext('2d');
+  screenStreamState.streamFormat = 'jpeg';
+  
+  showPhoneNotification('使用JPEG截图模式（低帧率）', 'info');
+  
+  // 通过IPC请求截图
+  const captureFrame = async () => {
+    if (screenStreamState.streamFormat !== 'jpeg') return;
+    
+    try {
+      const result = await ipcRenderer.invoke('phone-action', 'screenshot');
+      if (result.success && result.screenshot) {
+        renderFrameFromBase64(result.screenshot);
+        screenStreamState.frameCount++;
+        if (onFrame) onFrame({ fps: fps });
+      }
+    } catch (err) {
+      console.error('[JpegStream] 截图失败:', err);
+    }
+  };
+  
+  // 启动定时截图
+  screenStreamState.isStreaming = true;
+  jpegStreamInterval = setInterval(captureFrame, 1000 / fps);
+  
+  // 立即截取第一帧
+  await captureFrame();
+  
+  return true;
+}
+
 // 停止屏幕视频流
 async function stopScreenStream() {
+  // 停止JPEG截图流
+  if (jpegStreamInterval) {
+    clearInterval(jpegStreamInterval);
+    jpegStreamInterval = null;
+    screenStreamState.isStreaming = false;
+    screenStreamState.streamFormat = null;
+    showPhoneNotification('JPEG截图流已停止', 'success');
+    console.log('[ScreenStream] JPEG流已停止');
+    return true;
+  }
+  
   if (!screenStreamState.isStreaming || !screenStreamState.ws) {
     showPhoneNotification('没有正在运行的屏幕流', 'warning');
     return false;
@@ -3322,6 +3393,7 @@ async function stopScreenStream() {
     screenStreamState.ws = null;
     screenStreamState.currentStreamId = null;
     screenStreamState.frameCount = 0;
+    screenStreamState.streamFormat = null;
     
     showPhoneNotification('屏幕流已停止', 'success');
     console.log('[ScreenStream] 已停止');
