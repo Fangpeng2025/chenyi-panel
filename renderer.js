@@ -1176,9 +1176,49 @@ async function refreshDashboard() {
   await checkServiceStatus('phone');
   await checkServiceStatus('droidpilot');
   
+  // 更新首页手机状态
+  updateHomePhoneStatus();
+  
   // 获取系统资源
   await updateSystemResources();
 }
+
+// 更新首页手机状态
+function updateHomePhoneStatus() {
+  const statusEl = document.getElementById('home-phone-status');
+  if (!statusEl) return;
+  
+  if (pcwlConnected) {
+    statusEl.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-green-400 mr-1"></span>在线 · ${pcwlDeviceInfo?.model || 'realme RMX3888'}`;
+  } else {
+    statusEl.innerHTML = `<span class="inline-block w-2 h-2 rounded-full bg-gray-400 mr-1"></span>离线`;
+  }
+}
+
+// 从首页发送AI消息
+function sendHomeAiMessage() {
+  const input = document.getElementById('home-ai-input');
+  if (!input || !input.value.trim()) return;
+  
+  const message = input.value.trim();
+  input.value = '';
+  
+  // 切换到AI助手面板并发送消息
+  showPanel('chat');
+  
+  // 延迟发送，等待面板切换完成
+  setTimeout(() => {
+    const chatInput = document.getElementById('message-input');
+    if (chatInput) {
+      chatInput.value = message;
+      // 触发发送
+      const sendBtn = document.querySelector('button[onclick="sendMessage()"]');
+      if (sendBtn) sendBtn.click();
+    }
+  }, 100);
+}
+
+window.sendHomeAiMessage = sendHomeAiMessage;
 
 window.refreshDashboard = refreshDashboard;
 
