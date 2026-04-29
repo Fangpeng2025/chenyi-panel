@@ -12,6 +12,183 @@ let pcwlConnected = false;   // 连接状态
 let pcwlDeviceId = 0;        // 请求ID计数器
 let pcwlDeviceInfo = null;   // 设备信息
 
+// 断线重连相关
+let pcwlReconnectTimer = null;    // 重连定时器
+let pcwlReconnectAttempts = 0;    // 重连尝试次数
+let pcwlMaxReconnectDelay = 30000; // 最大重连延迟（30秒）
+let pcwlIsReconnecting = false;   // 是否正在重连
+let pcwlManualDisconnect = false; // 是否手动断开
+
+// 心跳检测相关
+let pcwlHeartbeatInterval = null; // 心跳定时器
+let pcwlHeartbeatTimeout = null;  // 心跳超时定时器
+let pcwlHeartbeatIntervalMs = 30000; // 心跳间隔（30秒）
+let pcwlHeartbeatTimeoutMs = 60000;  // 心跳超时（60秒）
+
+// 计算重连延迟（指数退避：1s, 2s, 4s, 8s, 16s, 30s...）
+function calculateReconnectDelay() {
+  const delay = Math.min(1000 * Math.pow(2, pcwlReconnectAttempts), pcwlMaxReconnectDelay);
+  return delay;
+}
+
+// 开始心跳检测
+function startHeartbeat() {
+  stopHeartbeat(); // 先停止之前的心跳
+  
+  console.log('[PCWL] 开始心跳检测');
+  
+  // 每30秒发送一次ping
+  pcwlHeartbeatInterval = setInterval(() => {
+    if (pcwlWs && pcwlConnected) {
+      console.log('[PCWL] 发送心跳 ping');
+      pcwlWs.send(JSON.stringify({ type: 'ping' }));
+      
+      // 设置超时检测
+      pcwlHeartbeatTimeout = setTimeout(() => {
+        console.log('[PCWL] 心跳超时，断开连接');
+        if (pcwlWs) {
+          pcwlWs.terminate();
+        }
+      }, pcwlHeartbeatTimeoutMs - pcwlHeartbeatIntervalMs);
+    }
+  }, pcwlHeartbeatIntervalMs);
+}
+
+// 停止心跳检测
+function stopHeartbeat() {
+  if (pcwlHeartbeatInterval) {
+    clearInterval(pcwlHeartbeatInterval);
+    pcwlHeartbeatInterval = null;
+  }
+  if (pcwlHeartbeatTimeout) {
+    clearTimeout(pcwlHeartbeatTimeout);
+    pcwlHeartbeatTimeout = null;
+  }
+  console.log('[PCWL] 停止心跳检测');
+}
+
+// 断线重连
+async function attemptReconnect() {
+  if (pcwlIsReconnecting || pcwlManualDisconnect) {
+    return;
+  }
+  
+  pcwlIsReconnecting = true;
+  const delay = calculateReconnectDelay();
+  
+  console.log(`[PCWL] ${delay/1000}秒后尝试重连（第${pcwlReconnectAttempts + 1}次）`);
+  
+  pcwlReconnectTimer = setTimeout(async () => {
+    try {
+      pcwlReconnectAttempts++;
+      
+      // 尝试重新连接
+      const phoneConfig = getPhoneConfig();
+      const ip = phoneConfig.ip || '192.168.0.102';
+      const port = phoneConfig.port || 8765;
+      
+      const WebSocket = require('ws');
+      const wsUrl = `ws://${ip}:${port}`;
+      
+      console.log(`[PCWL] 重连中... ${wsUrl}`);
+      
+      pcwlWs = new WebSocket(wsUrl);
+      
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('重连超时'));
+        }, 10000);
+        
+        pcwlWs.on('open', () => {
+          clearTimeout(timeout);
+          pcwlConnected = true;
+          pcwlIsReconnecting = false;
+          pcwlReconnectAttempts = 0; // 重置重连次数
+          console.log('[PCWL] 重连成功');
+          resolve();
+        });
+        
+        pcwlWs.on('error', (err) => {
+          clearTimeout(timeout);
+          reject(err);
+        });
+      });
+      
+      // 重连成功，设置事件处理
+      setupWebSocketHandlers();
+      
+      // 获取设备信息
+      const deviceResult = await sendPhoneCommand('get_device_info');
+      if (deviceResult.success) {
+        pcwlDeviceInfo = deviceResult.data;
+      }
+      
+      // 开始心跳
+      startHeartbeat();
+      
+      // 通知前端
+      if (mainWindow) {
+        mainWindow.webContents.send('pcwl-reconnected', pcwlDeviceInfo);
+      }
+      
+    } catch (error) {
+      console.log(`[PCWL] 重连失败: ${error.message}`);
+      pcwlConnected = false;
+      pcwlIsReconnecting = false;
+      
+      // 继续重连
+      attemptReconnect();
+    }
+  }, delay);
+}
+
+// 设置WebSocket事件处理器
+function setupWebSocketHandlers() {
+  if (!pcwlWs) return;
+  
+  pcwlWs.on('message', (data) => {
+    try {
+      const msg = JSON.parse(data.toString());
+      
+      // 处理pong响应
+      if (msg.type === 'pong') {
+        console.log('[PCWL] 收到心跳 pong');
+        if (pcwlHeartbeatTimeout) {
+          clearTimeout(pcwlHeartbeatTimeout);
+          pcwlHeartbeatTimeout = null;
+        }
+        return;
+      }
+      
+      // 其他消息由 sendPhoneCommand 的handler处理
+    } catch (e) {
+      // 非JSON消息，忽略
+    }
+  });
+  
+  pcwlWs.on('close', () => {
+    console.log('[PCWL] WebSocket 已断开');
+    pcwlConnected = false;
+    pcwlDeviceInfo = null;
+    stopHeartbeat();
+    
+    // 通知前端
+    if (mainWindow) {
+      mainWindow.webContents.send('pcwl-disconnected');
+    }
+    
+    // 如果不是手动断开，尝试重连
+    if (!pcwlManualDisconnect) {
+      attemptReconnect();
+    }
+  });
+  
+  pcwlWs.on('error', (err) => {
+    console.log('[PCWL] WebSocket 错误:', err.message);
+    pcwlConnected = false;
+  });
+}
+
 // 发送手机命令（通过 WebSocket）
 function sendPhoneCommand(cmd, params = {}) {
   return new Promise((resolve, reject) => {
@@ -701,6 +878,9 @@ ipcMain.handle('pcwl-connect', async (event, params) => {
       };
     }
     
+    // 重置手动断开标志
+    pcwlManualDisconnect = false;
+    
     // 动态加载 WebSocket 模块
     const WebSocket = require('ws');
     
@@ -734,17 +914,11 @@ ipcMain.handle('pcwl-connect', async (event, params) => {
     if (deviceResult.success) {
       pcwlDeviceInfo = deviceResult.data;
       
-      // 设置断开连接的事件处理
-      pcwlWs.on('close', () => {
-        console.log('[PCWL] WebSocket 已断开');
-        pcwlConnected = false;
-        pcwlDeviceInfo = null;
-      });
+      // 设置WebSocket事件处理（断线重连、心跳等）
+      setupWebSocketHandlers();
       
-      pcwlWs.on('error', (err) => {
-        console.log('[PCWL] WebSocket 错误:', err.message);
-        pcwlConnected = false;
-      });
+      // 启动心跳检测
+      startHeartbeat();
       
       return { 
         success: true, 
@@ -771,6 +945,22 @@ ipcMain.handle('pcwl-connect', async (event, params) => {
 // 鹏程万里断开
 ipcMain.handle('pcwl-disconnect', async () => {
   try {
+    // 设置手动断开标志，防止自动重连
+    pcwlManualDisconnect = true;
+    
+    // 停止心跳检测
+    stopHeartbeat();
+    
+    // 清除重连定时器
+    if (pcwlReconnectTimer) {
+      clearTimeout(pcwlReconnectTimer);
+      pcwlReconnectTimer = null;
+    }
+    
+    // 重置重连状态
+    pcwlIsReconnecting = false;
+    pcwlReconnectAttempts = 0;
+    
     // 关闭 WebSocket 连接
     if (pcwlWs) {
       pcwlWs.close();
