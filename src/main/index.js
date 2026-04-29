@@ -5,6 +5,7 @@
 
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const http = require('http');
 const { machineIdSync } = require('node-machine-id');
 const ConnectionManager = require('./connection');
 const Executor = require('./executor');
@@ -19,6 +20,45 @@ const { CLOUD_CONFIG, HEARTBEAT_CONFIG, STORAGE_KEYS } = require('../shared/cons
 let mainWindow = null;
 let connectionManager = null;
 let executor = null;
+let currentToken = null;
+
+// ==================== HTTP工具 ====================
+function apiRequest(method, path, body = null, token = null) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(path, CLOUD_CONFIG.API_URL);
+    const options = {
+      hostname: url.hostname,
+      port: url.port || 80,
+      path: url.pathname,
+      method,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+    
+    if (token) {
+      options.headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        try {
+          resolve(JSON.parse(data));
+        } catch {
+          resolve(data);
+        }
+      });
+    });
+    
+    req.on('error', reject);
+    if (body) {
+      req.write(JSON.stringify(body));
+    }
+    req.end();
+  });
+}
 
 /**
  * 创建主窗口
@@ -56,10 +96,13 @@ function createWindow() {
  * 初始化连接管理器
  */
 function initConnection() {
+  // WebSocket连接地址
+  const wsBaseUrl = process.env.NODE_ENV === 'development' 
+    ? CLOUD_CONFIG.DEV_WS_URL 
+    : CLOUD_CONFIG.WS_URL;
+  
   connectionManager = new ConnectionManager({
-    wsUrl: process.env.NODE_ENV === 'development' 
-      ? CLOUD_CONFIG.DEV_WS_URL 
-      : CLOUD_CONFIG.WS_URL,
+    wsUrl: wsBaseUrl,
     heartbeatInterval: HEARTBEAT_CONFIG.INTERVAL,
     heartbeatTimeout: HEARTBEAT_CONFIG.TIMEOUT
   });
@@ -163,14 +206,32 @@ function getDeviceName() {
 function setupIPC() {
   // 登录
   ipcMain.handle('login', async (event, { email, password }) => {
-    // TODO: 调用云端API登录
-    return { success: true, token: 'test_token' };
+    try {
+      const result = await apiRequest('POST', '/auth/login', { email, password });
+      if (result.token) {
+        currentToken = result.token;
+        // 保存到本地存储
+        mainWindow?.webContents.session?.cookies?.set({
+          url: CLOUD_CONFIG.API_URL,
+          name: STORAGE_KEYS.TOKEN,
+          value: result.token
+        });
+      }
+      return result;
+    } catch (err) {
+      return { error: err.message };
+    }
   });
 
   // 连接云端
   ipcMain.handle('connect', async (event, token) => {
-    connectionManager.connect(token);
-    return { success: true };
+    currentToken = token || currentToken;
+    if (currentToken) {
+      // 构建WebSocket URL，带token参数
+      const wsUrl = `${CLOUD_CONFIG.WS_URL}?token=${currentToken}`;
+      connectionManager.connect(currentToken);
+    }
+    return { success: !!currentToken };
   });
 
   // 断开连接
@@ -208,8 +269,11 @@ function setupIPC() {
 
   // 获取设备列表
   ipcMain.handle('get-devices', async () => {
-    // TODO: 从云端获取设备列表
-    return { devices: [] };
+    try {
+      return await apiRequest('GET', '/devices', null, currentToken);
+    } catch (err) {
+      return { error: err.message, devices: [] };
+    }
   });
 
   // 窗口控制

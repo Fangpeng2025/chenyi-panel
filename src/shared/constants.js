@@ -4,12 +4,12 @@
 
 // 云端服务地址
 const CLOUD_CONFIG = {
-  WS_URL: 'wss://cloud.chenyi.com/ws',
-  API_URL: 'https://cloud.chenyi.com/api/v1',
+  WS_URL: 'ws://8.147.232.175/ws',
+  API_URL: 'http://8.147.232.175/api/v1',
   
   // 开发环境
-  DEV_WS_URL: 'ws://localhost:3000/ws',
-  DEV_API_URL: 'http://localhost:3000/api/v1'
+  DEV_WS_URL: 'ws://localhost:3001/ws',
+  DEV_API_URL: 'http://localhost:3001/api/v1'
 };
 
 // 心跳配置
