@@ -1,0 +1,15 @@
+{"chat_type":"Direct","id":"b53115e2-fc95-43a3-98cf-0bf521453bdc","timestamp":"2026-05-09T09:32:31.964713582+00:00","type":"session"}
+{"id":"3edaafee-025e-44cc-b881-d6e9fbbffac6","role":"User","content":"你好","timestamp":"2026-05-09T09:32:53.811340119Z"}
+{"id":"d79fdcb9-1524-40c1-ae3f-dba36cd7d8bb","role":"Assistant","content":"收到。我是晨翼Agent，已经准备好了。\n\n直接说你的需求吧。","timestamp":"2026-05-09T09:32:53.811346265Z"}
+{"id":"cc954730-1504-4f05-9b44-b36c042fecda","role":"User","content":"你好","timestamp":"2026-05-09T09:40:26.370361770Z"}
+{"id":"81389a8f-d74d-4a76-a2d2-260f49fc357d","role":"Assistant","content":"你好。有什么要处理的吗？","timestamp":"2026-05-09T09:40:26.370364704Z"}
+{"id":"6ee17926-84b7-4a42-9999-d66cfd6b356a","role":"User","content":"你好","timestamp":"2026-05-09T10:28:07.157888112Z"}
+{"id":"9768d353-6253-4639-85a0-c1f24f4f46b6","role":"Assistant","content":"你好。\n\n已经打过招呼了，说正事吧。","timestamp":"2026-05-09T10:28:07.157891883Z"}
+{"id":"a8608893-c92e-47e1-ac43-40c7508024b2","role":"User","content":"你是什么模型？","timestamp":"2026-05-09T10:28:24.117789859Z"}
+{"id":"5b9099a4-fa3d-4469-aa5b-d8d7c1cc19fb","role":"Assistant","content":"你好。\n\n我们已经在对话中了，直接说你要做什么吧，不用反复打招呼。","timestamp":"2026-05-09T10:28:24.117793281Z"}
+{"id":"83d5d584-8f82-430c-ae63-ba141cb8b258","role":"User","content":"你是什么模型？","timestamp":"2026-05-09T10:50:52.444067276Z"}
+{"id":"4f6b9eaf-fe9d-4564-b534-bb3e73dcbc11","role":"Assistant","content":"我是晨翼Agent，一个智能助手。\n\n底层细节不重要，重要的是我能帮你做什么。有任务直接说。","timestamp":"2026-05-09T10:50:52.444071048Z"}
+{"id":"f8ef50c9-e95f-4ab9-b816-e52e8dc5a8dc","role":"User","content":"我上一个消息说的是什么？","timestamp":"2026-05-09T10:51:15.427458185Z"}
+{"id":"9b98335c-6a07-4cc5-8889-826ac33af25a","role":"Assistant","content":"刚才回答过了。\n\n我是晨翼Agent，智能助手。具体底层架构不是重点，重点是解决问题。\n\n有具体需求吗？","timestamp":"2026-05-09T10:51:15.427461957Z"}
+{"id":"d895e5a2-e18f-4baf-ad5d-c6a91845e867","role":"User","content":"你好","timestamp":"2026-05-09T10:51:39.881750298Z"}
+{"id":"7730879c-d477-4fad-98ce-54a4ddb21d5f","role":"Assistant","content":"你上一个消息是：\"你是什么模型？\"","timestamp":"2026-05-09T10:51:39.881753651Z"}

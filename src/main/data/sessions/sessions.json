@@ -1,0 +1,32 @@
+{
+  "electron:user": {
+    "session_id": "ca89d6d0-e1e3-4c41-89c7-c55980e0f04e",
+    "session_key": "electron:user",
+    "started_at": "2026-05-12T02:40:02.156805799Z",
+    "last_interaction_at": "2026-05-12T02:40:02.156805799Z",
+    "chat_type": "Direct",
+    "channel": "electron",
+    "peer": "user",
+    "token_usage": {
+      "prompt": 0,
+      "completion": 0,
+      "total": 0
+    },
+    "compaction_count": 0
+  },
+  "webchat:anonymous": {
+    "session_id": "e9f26326-e79c-4aff-befb-3bc9b3e21e7f",
+    "session_key": "webchat:anonymous",
+    "started_at": "2026-05-12T02:46:24.957486378Z",
+    "last_interaction_at": "2026-05-12T02:46:24.957486378Z",
+    "chat_type": "Direct",
+    "channel": "webchat",
+    "peer": "anonymous",
+    "token_usage": {
+      "prompt": 0,
+      "completion": 0,
+      "total": 0
+    },
+    "compaction_count": 0
+  }
+}

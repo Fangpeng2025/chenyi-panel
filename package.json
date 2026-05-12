@@ -11,7 +11,11 @@
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac"
   },
-  "keywords": ["chenyi", "agent", "electron"],
+  "keywords": [
+    "chenyi",
+    "agent",
+    "electron"
+  ],
   "author": {
     "name": "Fangpeng",
     "email": "245659216@qq.com"
@@ -23,9 +27,14 @@
   },
   "devDependencies": {
     "electron": "^28.0.0",
-    "electron-builder": "^24.0.0"
+    "electron-builder": "^24.0.0",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
+    "eventemitter3": "^5.0.4",
+    "node-machine-id": "^1.1.12",
+    "sortablejs": "^1.15.7",
+    "uuid": "^14.0.0",
     "ws": "^8.20.0"
   },
   "build": {
@@ -34,18 +43,33 @@
     "directories": {
       "output": "dist"
     },
-    "files": ["**/*", "!**/node_modules/*/{CHANGELOG.md,README.md}"],
+    "asarUnpack": [
+      "src/native/*.node"
+    ],
+    "files": [
+      "**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md}"
+    ],
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Utility",
       "icon": "assets/icon.png"
     },
     "win": {
-      "target": ["nsis", "portable"],
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "assets/icon.png"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.utilities",
       "icon": "assets/icon.png"
     }

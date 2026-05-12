@@ -1,0 +1,13 @@
+{"chat_type":"Direct","id":"006e3b9a-eeeb-4d6f-a7aa-19338052e904","timestamp":"2026-05-08T07:12:39.997341429+00:00","type":"session"}
+{"id":"65437963-3e23-49c9-87ee-815ada969180","role":"User","content":"hello","timestamp":"2026-05-08T07:12:50.492198312Z"}
+{"id":"95a3b4f4-fdf2-461e-bd62-8d907e0eca60","role":"Assistant","content":"你好。有什么需要帮忙的？","timestamp":"2026-05-08T07:12:50.492202572Z"}
+{"id":"32a5ec64-228d-4a39-896d-abb50da20e5c","role":"User","content":"你好，我是测试","timestamp":"2026-05-08T07:15:13.727852015Z"}
+{"id":"14b9146b-88c5-4d84-891a-15b3556ab803","role":"Assistant","content":"你好。有什么需要帮忙的？","timestamp":"2026-05-08T07:15:13.727854390Z"}
+{"id":"7369dcef-d5ce-48c6-8fd6-02458902ce40","role":"User","content":"我叫小明","timestamp":"2026-05-08T07:15:16.951853218Z"}
+{"id":"f5dba253-d8f2-4451-8966-a291f17c0ea8","role":"Assistant","content":"收到。你想测试什么？","timestamp":"2026-05-08T07:15:16.951856990Z"}
+{"id":"2904e215-be05-4de9-8b4c-dc9f00fbbd4f","role":"User","content":"我刚才说我叫什么？","timestamp":"2026-05-08T07:15:28.342429179Z"}
+{"id":"8dfec6e3-eb41-4f2f-b793-cb7af691e7eb","role":"Assistant","content":"好的，小明。有什么需要帮忙的？","timestamp":"2026-05-08T07:15:28.342431064Z"}
+{"id":"dc36bcdb-a225-4296-9d90-21f78cd486e5","role":"User","content":"main","timestamp":"2026-05-08T08:02:25.939393229Z"}
+{"id":"279a386a-87e9-4c35-b3a2-8a2f2f95cd86","role":"Assistant","content":"小明。\n\n你刚才说的。","timestamp":"2026-05-08T08:02:25.939396652Z"}
+{"id":"3049df1d-f64d-4068-af76-56b555d544e5","role":"User","content":"main","timestamp":"2026-05-08T08:02:51.994003973Z"}
+{"id":"93be9ca1-b79b-4861-8b23-560e191749a9","role":"Assistant","content":"\"main\"？\n\n你是问编程里的 `main` 函数，还是别的意思？","timestamp":"2026-05-08T08:02:51.994008304Z"}

@@ -1,0 +1,55 @@
+{
+  "model": {
+    "default": "glm-5",
+    "provider": "oneapi",
+    "context_length": 200000,
+    "max_tokens": 8192,
+    "temperature": 0.7,
+    "timeout": 120
+  },
+  "providers": {
+    "oneapi": {
+      "name": "OneAPI",
+      "base_url": "https://www.xintiandi.online/v1",
+      "api_key": "sk-fsy2yLugW1SPt3ZKEfA4B4133f7c42Dd890cD3F582C120C2",
+      "model": "glm-5",
+      "enabled": true
+    },
+    "minimax": {
+      "name": "MiniMax",
+      "base_url": "https://api.minimax.chat/v1",
+      "api_key": "",
+      "model": "MiniMax-M2.7",
+      "enabled": false
+    },
+    "openai": {
+      "name": "OpenAI",
+      "base_url": "https://api.openai.com/v1",
+      "api_key": "",
+      "model": "gpt-4o-mini",
+      "enabled": false
+    },
+    "deepseek": {
+      "name": "DeepSeek",
+      "base_url": "https://api.deepseek.com/v1",
+      "api_key": "",
+      "model": "deepseek-chat",
+      "enabled": false
+    },
+    "custom": {
+      "name": "自定义",
+      "base_url": "",
+      "api_key": "",
+      "model": "",
+      "enabled": false
+    },
+    "ollama": {
+      "name": "Ollama (本地)",
+      "base_url": "http://localhost:11434/v1",
+      "api_key": "ollama",
+      "model": "llama3.1:8b",
+      "enabled": false,
+      "local": true
+    }
+  }
+}

@@ -2,14 +2,41 @@
  * 晨翼Agent - 常量定义
  */
 
-// 云端服务地址
+// 云端服务地址（通过 Nginx 反向代理）
 const CLOUD_CONFIG = {
-  WS_URL: 'ws://8.147.232.175/ws',
-  API_URL: 'http://8.147.232.175/api/v1',
+  // 生产环境 - HTTPS
+  WS_URL: 'wss://chenyi.xintiandi.online/cloud/ws',
+  API_URL: 'https://chenyi.xintiandi.online/cloud/api',
   
-  // 开发环境
-  DEV_WS_URL: 'ws://localhost:3001/ws',
-  DEV_API_URL: 'http://localhost:3001/api/v1'
+  // 开发环境 - 本地直连
+  DEV_WS_URL: 'ws://localhost:3002/ws',
+  DEV_API_URL: 'http://localhost:3002/api'
+};
+
+// Rust内核配置（新版）
+const KERNEL_CONFIG = {
+  API_URL: 'https://chenyi.xintiandi.online/api/v1',
+  WS_URL: 'wss://chenyi.xintiandi.online/ws',
+  HEALTH_CHECK_INTERVAL: 60000  // 1分钟检查一次
+};
+
+// IPC通信配置
+const IPC_CONFIG = {
+  MODE: process.env.IPC_MODE || 'http', // 'http' 或 'ipc'
+  HTTP: {
+    MAX_RETRIES: 3,
+    RETRY_DELAY: 1000,        // 初始延迟1秒
+    RETRY_MULTIPLIER: 2,       // 指数退避
+    FAILURE_THRESHOLD: 5,      // 熔断阈值
+    CIRCUIT_TIMEOUT: 30000,    // 熔断30秒
+    DEFAULT_TIMEOUT: 30000
+  },
+  PROCESS: {
+    MAX_RESTART_ATTEMPTS: 5,
+    RESTART_DELAY: 1000,       // 初始延迟1秒
+    MAX_RESTART_DELAY: 30000,  // 最大延迟30秒
+    MAX_BUFFER_SIZE: 10485760  // 10MB
+  }
 };
 
 // 心跳配置
@@ -52,6 +79,8 @@ const STORAGE_KEYS = {
 
 module.exports = {
   CLOUD_CONFIG,
+  KERNEL_CONFIG,
+  IPC_CONFIG,
   HEARTBEAT_CONFIG,
   STREAM_CONFIG,
   JWT_CONFIG,

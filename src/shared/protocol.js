@@ -23,6 +23,10 @@ const MessageType = {
   SYNC: 'sync',
   DEVICE_UPDATE: 'device_update',
   
+  // AI对话
+  AI_CHAT: 'ai_chat',
+  AI_CHAT_ACK: 'ai_chat_ack',
+  
   // 错误
   ERROR: 'error'
 };

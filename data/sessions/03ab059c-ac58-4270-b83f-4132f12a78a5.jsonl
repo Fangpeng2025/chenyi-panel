@@ -1,0 +1,7 @@
+{"chat_type":"Direct","id":"03ab059c-ac58-4270-b83f-4132f12a78a5","timestamp":"2026-05-08T10:10:02.246170100+00:00","type":"session"}
+{"id":"07317eb0-1c45-47d6-b5dd-eb99fbb99228","role":"User","content":"你好","timestamp":"2026-05-08T10:10:23.234598343Z"}
+{"id":"c79025cd-6bbc-4719-9936-988a20c84178","role":"Assistant","content":"收到。我是晨翼Agent。有什么任务？","timestamp":"2026-05-08T10:10:23.234603162Z"}
+{"id":"45d659d9-9192-4f7a-8060-35b3bbcfc11f","role":"User","content":"测试云端同步","timestamp":"2026-05-08T10:15:51.960539654Z"}
+{"id":"bdb19e31-cf2e-4a1f-9a3f-10fb1649576a","role":"Assistant","content":"你好。有什么需要帮忙的？","timestamp":"2026-05-08T10:15:51.960543356Z"}
+{"id":"966c763b-1683-4992-bf91-b62c86db5599","role":"User","content":"你好","timestamp":"2026-05-08T10:19:08.699816879Z"}
+{"id":"e427914e-61ff-4d6d-b2a1-780073215a93","role":"Assistant","content":"云端同步测试——我这端响应正常。\n\n还有其他要测的吗？","timestamp":"2026-05-08T10:19:08.699820232Z"}
